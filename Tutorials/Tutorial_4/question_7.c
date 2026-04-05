@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// finding the kth node from the end using the Tortoise and Hare algorithm(fast and slow ptr)
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -56,7 +57,7 @@ void deleteFirst(node **head, node **tail)
     }
 }
 void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+// function to delete the first node of the Doubly Linked List
 {
     if (*tail != NULL)
     {
@@ -75,13 +76,22 @@ void deleteLast(node **head, node **tail)
         return;
     }
 }
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
+int kth_node(node **head, int k)
+// finds and returns the kth node from the end
 {
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    node *fast = *head, *slow = *head;
+    int i = 0;
+    while (i != k)
+    {
+        fast = fast->next;
+        i++;
+    } // fast pointer reaches kth node from the beginning
+    while (fast != NULL)
+    {
+        fast = fast->next;
+        slow = slow->next;
+    } // at the end of this loop, fast becomes NULL, and slow points to the kth node from the end
+    return slow->data;
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -137,24 +147,10 @@ int main()
         scanf(" %c", &more);
     }
     printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
-    printList(head);
+    int k;
+    printf("Enter the value of k to know the kth node from the end\n");
+    scanf("%d", &k);
+    printf("The %dth node from the end is %d\n", k, kth_node(&head, k));
     freeMemory(&head);
     return 0;
 }

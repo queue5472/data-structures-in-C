@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Remove duplicates from a sorted linked list
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -56,7 +57,7 @@ void deleteFirst(node **head, node **tail)
     }
 }
 void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+// function to delete the first node of the singly Linked List
 {
     if (*tail != NULL)
     {
@@ -75,13 +76,23 @@ void deleteLast(node **head, node **tail)
         return;
     }
 }
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
+void delete_duplicates(node **head)
+// deletes duplicate elements from a sorted list
 {
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    node *curr = *head;
+    while (curr->next != NULL)
+    {
+        if (curr->data == curr->next->data)
+        {
+            node *del = curr->next;
+            curr->next = curr->next->next;
+            free(del);
+        }
+        else
+        {
+            curr = curr->next;
+        }
+    }
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -110,6 +121,7 @@ int main()
 {
     node *head = NULL, *tail = NULL;
     char more = 'y';
+    printf("Please insert the elements in ascending order\n");
     while (more == 'y')
     {
         int ch;
@@ -136,24 +148,8 @@ int main()
         printf("Do want to delete another node?\n");
         scanf(" %c", &more);
     }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
+    delete_duplicates(&head);
+    printf("The list after deleting duplicates is :\n");
     printList(head);
     freeMemory(&head);
     return 0;

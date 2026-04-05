@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Checking whether the given list is Palindrome
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,52 +41,44 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+node *reverseList(node **head, node **tail)
+// reverses the list and returns the pointer to the head of the reversed list
 {
-    if (*head != NULL)
+    node *prev = NULL, *curr = *head;
+    while (curr != NULL)
     {
-        node *temp = (*head)->next;
-        free(*head);
-        *head = temp;
+        node *temp = curr->next;
+        // reversing the pointers
+        curr->next = prev;
+
+        prev = curr;
+        curr = temp;
     }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
+    return prev;
 }
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+int palindromeList(node **head, node **reversed_head)
+// Compares the original list with the reversed list and checks if they are palindrome
 {
-    if (*tail != NULL)
+    node *temp = *head, *temp_rev = *reversed_head;
+    while (temp != NULL && temp_rev != NULL)
     {
-        node *temp = *head;
-        while (temp->next != *tail)
+        if (temp->data != temp_rev->data)
         {
-            temp = temp->next;
+            return 0;
         }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        temp = temp->next;
+        temp_rev = temp_rev->next;
     }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
-}
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
-{
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    return 1;
 }
 void printList(node *head)
 // function to print the Singly Linked List
 {
+    if (head == NULL)
+    {
+        printf("EMPTY LIST\n");
+        return;
+    }
     node *temp = head;
     while (temp != NULL)
     {
@@ -122,39 +115,19 @@ int main()
         printf("Do you want to add another node?\n");
         scanf(" %c", &more);
     }
+    printf("The original linked list is :\n");
     printList(head);
-    more = 'y';
-    while (more == 'y')
+    node *reversed_head = reverseList(&head, &tail);
+    printf("The reversed list is :\n");
+    printList(reversed_head);
+    if (palindromeList(&head, &reversed_head))
     {
-        int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            deleteFirst(&head, &tail);
-        else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
+        printf("The list is palindrome\n");
     }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
+    else
     {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
+        printf("The list is not palindrome\n");
     }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
-    printList(head);
     freeMemory(&head);
     return 0;
 }

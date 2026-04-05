@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Partitioning a linked list around a given value and keeping the original order
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,48 +41,51 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+void concatenate(node **headA, node **headB, node **headC, node **tailA, node **tailB)
+// concatenates three lists
 {
-    if (*head != NULL)
-    {
-        node *temp = (*head)->next;
-        free(*head);
-        *head = temp;
-    }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
+    (*tailA)->next = *headB;
+    (*tailB)->next = *headC;
 }
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+void append(node **head, node **tail, int x)
 {
+    node *new_node = (node *)malloc(sizeof(node));
+    new_node->next = NULL;
+    new_node->data = x;
     if (*tail != NULL)
     {
-        node *temp = *head;
-        while (temp->next != *tail)
-        {
-            temp = temp->next;
-        }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        (*tail)->next = new_node;
     }
     else
     {
-        printf("The list is already empty\n");
-        return;
+        *head = new_node;
     }
+    *tail = new_node;
 }
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
+node *partitioning(node **head, node **tail, int x)
+// creates a new list by placing all elements lesser than x before x, and all greater, after x
+// preserving the original relative order and returns the pointer to the new list
 {
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    node *head_l = NULL, *tail_l = NULL, *head_e = NULL, *tail_e = NULL, *head_g = NULL, *tail_g = NULL; // l-> lesser, e -> equal, g-> greater
+    node *temp = *head;
+    while (temp != NULL)
+    {
+        if (temp->data < x)
+        {
+            append(&head_l, &tail_l, temp->data);
+        }
+        else if (temp->data == x)
+        {
+            append(&head_e, &tail_e, temp->data);
+        }
+        else
+        {
+            append(&head_g, &tail_g, temp->data);
+        }
+        temp = temp->next;
+    }
+    concatenate(&head_l, &head_e, &head_g, &tail_l, &tail_e);
+    return head_l;
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -123,38 +127,13 @@ int main()
         scanf(" %c", &more);
     }
     printList(head);
-    more = 'y';
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            deleteFirst(&head, &tail);
-        else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
-    printList(head);
+    int x;
+    printf("Enter the element along which you want to partition\n");
+    scanf("%d", &x);
+    printf("The list after partition is :\n");
+    node *new_head = partitioning(&head, &tail, x);
+    printList(new_head);
     freeMemory(&head);
+    freeMemory(&new_head);
     return 0;
 }
