@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Delete Middle of Linked List by using Tortoise and Hare algorithm(fast and slow ptr approach )
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,52 +41,55 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+void deleteMiddle(node **head, node **tail)
 {
-    if (*head != NULL)
+    // Checking for the edge case : empty list
+    if (*head == NULL || *tail == NULL)
     {
-        node *temp = (*head)->next;
+        printf("The list is empty\n");
+        return;
+    }
+    // Checking for the edge case : only one node
+    if (*head == *tail)
+    {
         free(*head);
-        *head = temp;
-    }
-    else
-    {
-        printf("The list is already empty\n");
+        *head = *tail = NULL;
         return;
     }
-}
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
-{
-    if (*tail != NULL)
+    node *prev = NULL, *slow = *head, *fast = *head;
+    // finding the middle element of the list
+    while (fast != NULL && fast->next != NULL && fast->next->next != NULL)
     {
-        node *temp = *head;
-        while (temp->next != *tail)
-        {
-            temp = temp->next;
-        }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        if (prev == NULL)
+            prev = *head;
+        else
+            prev = prev->next;
+        slow = slow->next;
+        fast = fast->next->next;
     }
-    else
+    // in the case of even number of nodes
+    if (fast != NULL && fast->next != NULL)
     {
-        printf("The list is already empty\n");
-        return;
+        if (prev == NULL)
+            prev = *head;
+        else
+            prev = prev->next;
+        slow = slow->next;
+        fast = fast->next;
     }
-}
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
-{
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    // deleting the found middle element, which is stored by the slow pointer
+    node *temp = slow->next;
+    free(slow);
+    prev->next = temp;
 }
 void printList(node *head)
 // function to print the Singly Linked List
 {
+    if (head == NULL)
+    {
+        printf("EMPTY LIST\n");
+        return;
+    }
     node *temp = head;
     while (temp != NULL)
     {
@@ -122,38 +126,10 @@ int main()
         printf("Do you want to add another node?\n");
         scanf(" %c", &more);
     }
+    printf("The original linked list is :\n");
     printList(head);
-    more = 'y';
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            deleteFirst(&head, &tail);
-        else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
+    deleteMiddle(&head, &tail);
+    printf("The list after deleting the middle element is :\n");
     printList(head);
     freeMemory(&head);
     return 0;

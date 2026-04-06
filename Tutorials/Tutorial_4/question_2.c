@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Detect and remove loop in a linked list using Floyd's Cycle Detection Algorithm
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,52 +41,43 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+node *detect_loop(node *head)
+// detects a loop in the linked list if it exists
 {
-    if (*head != NULL)
+    node *p = head, *q = head;
+    while (p && q && q->next) // none of these pointers should be NULL, otherwise the loop stops
     {
-        node *temp = (*head)->next;
-        free(*head);
-        *head = temp;
+        p = p->next;
+        q = q->next->next;
+        if (p == q)
+            return p;
     }
-    else
+    return NULL;
+}
+void remove_loop(node *p, node **head)
+// finds the starting point of the loop, and removes it
+{
+    if (p == NULL)
     {
-        printf("The list is already empty\n");
+        printf("NO Loop Detected\n");
         return;
     }
-}
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
-{
-    if (*tail != NULL)
+    node *q = *head;
+    while (p != q) // Floyd's Cycle Detection algorithm
     {
-        node *temp = *head;
-        while (temp->next != *tail)
-        {
-            temp = temp->next;
-        }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        p = p->next;
+        q = q->next;
     }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
-}
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
-{
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    p->next = NULL; // Cuts off the linked list at the starting of the loop
 }
 void printList(node *head)
 // function to print the Singly Linked List
 {
+    if (head == NULL)
+    {
+        printf("EMPTY LIST\n");
+        return;
+    }
     node *temp = head;
     while (temp != NULL)
     {
@@ -110,6 +102,7 @@ int main()
 {
     node *head = NULL, *tail = NULL;
     char more = 'y';
+    int count = 0;
     while (more == 'y')
     {
         int ch;
@@ -117,43 +110,27 @@ int main()
         scanf("%d", &ch);
         if (ch == 1)
             insertAtFirst(&head, &tail);
-        if (ch == 2)
-            insertAtLast(&head, &tail);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    more = 'y';
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            deleteFirst(&head, &tail);
         else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
+            insertAtLast(&head, &tail);
+        ++count;
         printf("Do you want to add another node?\n");
         scanf(" %c", &more);
     }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
+    printList(head);
+    int x;
+    printf("Enter the size of the loop\n");;
+    scanf("%d",&x);
+    if(x==0)
+    {
+        printf("No loop.\n");
+        printList(head);
+        return 1;
+    }
+    node *temp = head;
+    for(int i = 1;temp!=NULL&& i<count-x;i++)
+        temp = temp->next;
+    tail->next = temp;
+    remove_loop(detect_loop(head),&head);
     printList(head);
     freeMemory(&head);
     return 0;

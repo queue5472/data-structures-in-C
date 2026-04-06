@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// remove duplicates from an unsorted linked list
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -75,13 +76,31 @@ void deleteLast(node **head, node **tail)
         return;
     }
 }
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
+void delete_duplicates(node **head)
+// deletes duplicate elements from an unsorted list
 {
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    node *curr = *head;
+    while (curr->next != NULL)
+    {
+        node *temp = curr->next;
+        node *prev = curr;
+        while (temp != NULL)
+        {
+            if (temp->data == curr->data)
+            {
+                node *to_del = temp;
+                prev->next = temp->next;
+                free(to_del);
+                temp = prev->next;
+            }
+            else
+            {
+                temp = temp->next;
+                prev = prev->next;
+            }
+        }
+        curr = curr->next;
+    }
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -136,24 +155,8 @@ int main()
         printf("Do want to delete another node?\n");
         scanf(" %c", &more);
     }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
+    delete_duplicates(&head);
+    printf("The list after deleting duplicates is :\n");
     printList(head);
     freeMemory(&head);
     return 0;

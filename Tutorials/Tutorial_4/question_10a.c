@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// Adds two numbers represented by linked lists
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,48 +41,36 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+int power(int x, int y)
+// function to calculate x^y
 {
-    if (*head != NULL)
+    int ans = 1;
+    for (int i = 0; i < y; i++)
     {
-        node *temp = (*head)->next;
-        free(*head);
-        *head = temp;
+        ans *= x;
     }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
+    return ans;
 }
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+int sum_list_num(node **headA, node **headB, int a, int b)
+// finds the sum of the numbers represented by lists A and B, with a and b digits(nodes) respectively
 {
-    if (*tail != NULL)
+    int pow_a = power(10, a - 1);
+    int pow_b = power(10, b - 1);
+    int num_a = 0, num_b = 0;
+    node *tempA = *headA, *tempB = *headB;
+    while (tempA != NULL)
     {
-        node *temp = *head;
-        while (temp->next != *tail)
-        {
-            temp = temp->next;
-        }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        num_a += (tempA->data) * pow_a;
+        pow_a /= 10;
+        tempA = tempA->next;
     }
-    else
+    while (tempB != NULL)
     {
-        printf("The list is already empty\n");
-        return;
+        num_b += (tempB->data) * pow_b;
+        pow_b /= 10;
+        tempB = tempB->next;
     }
-}
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
-{
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
+    return num_a + num_b;
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -108,53 +97,42 @@ void freeMemory(node **head)
 }
 int main()
 {
-    node *head = NULL, *tail = NULL;
+    node *headA = NULL, *tailA = NULL;
     char more = 'y';
+    int a, b;
+    printf("Enter the number of nodes in List A\n");
+    scanf("%d", &a);
     while (more == 'y')
     {
         int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
+        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last of the first list.\n");
         scanf("%d", &ch);
         if (ch == 1)
-            insertAtFirst(&head, &tail);
+            insertAtFirst(&headA, &tailA);
         if (ch == 2)
-            insertAtLast(&head, &tail);
+            insertAtLast(&headA, &tailA);
         printf("Do you want to add another node?\n");
         scanf(" %c", &more);
     }
-    printList(head);
+    printList(headA);
+    node *headB = NULL, *tailB = NULL;
+    printf("Enter the number of nodes in List B\n");
+    scanf("%d", &b);
     more = 'y';
     while (more == 'y')
     {
         int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
+        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last of the second list.\n");
         scanf("%d", &ch);
         if (ch == 1)
-            deleteFirst(&head, &tail);
-        else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
+            insertAtFirst(&headB, &tailB);
         if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
+            insertAtLast(&headB, &tailB);
         printf("Do you want to add another node?\n");
         scanf(" %c", &more);
     }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
-    printList(head);
-    freeMemory(&head);
+    printf("The sum of the numbers represented by linked lists is %d\n", sum_list_num(&headA, &headB, a, b));
+    freeMemory(&headA);
+    freeMemory(&headB);
     return 0;
 }

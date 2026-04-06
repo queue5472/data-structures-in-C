@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// delete the last occurence of the given key
 typedef struct node
 // creating a user-defined 'node' data structure with the alias 'node'.
 {
@@ -40,48 +41,34 @@ void insertAtFirst(node **head, node **tail)
         *head = *tail = new_node;
     }
 }
-void deleteFirst(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
+void deleteLastOccurence(node **head, node **tail, int x)
+// finds and deletes the last occurence of x.
 {
-    if (*head != NULL)
+    node *curr = *head, *prev = NULL, *temp = NULL, *prev_temp = NULL;
+    while (curr != NULL)
     {
-        node *temp = (*head)->next;
-        free(*head);
-        *head = temp;
-    }
-    else
-    {
-        printf("The list is already empty\n");
-        return;
-    }
-}
-void deleteLast(node **head, node **tail)
-// function to delete the first node of the Singly Linked List
-{
-    if (*tail != NULL)
-    {
-        node *temp = *head;
-        while (temp->next != *tail)
+        if (curr->data == x)
         {
-            temp = temp->next;
+            temp = curr;      // stores the pointer to the last occurence of x
+            prev_temp = prev; // stores the pointer to the node just before x
         }
-        free(*tail);
-        *tail = temp;
-        (*tail)->next = NULL;
+        curr = curr->next;
+        if (prev == NULL)
+            prev = *head;
+        else
+            prev = prev->next;
+    }
+    if (prev_temp != NULL)
+    {
+        node *del = temp;
+        prev_temp->next = temp->next;
+        free(del);
     }
     else
     {
-        printf("The list is already empty\n");
-        return;
+        *head = temp->next;
+        free(temp);
     }
-}
-void concatenateLists(node **tail_1, node **head_2)
-// function to concatenate two Singly Linked Lists
-{
-    if (*tail_1 != NULL || *head_2 != NULL)
-        (*tail_1)->next = *head_2;
-    else
-        printf("One or both of the lists is empty\n");
 }
 void printList(node *head)
 // function to print the Singly Linked List
@@ -123,37 +110,11 @@ int main()
         scanf(" %c", &more);
     }
     printList(head);
-    more = 'y';
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to delete a node from the beginning and 2 to delete a node from the end. Otherwise, Enter -1\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            deleteFirst(&head, &tail);
-        else if (ch == 2)
-            deleteLast(&head, &tail);
-        printf("Do want to delete another node?\n");
-        scanf(" %c", &more);
-    }
-    printList(head);
-    printf("Do you want to create another list?\n");
-    scanf(" %c", &more);
-    node *head_2 = NULL, *tail_2 = NULL;
-    while (more == 'y')
-    {
-        int ch;
-        printf("Enter 1 to insert a node at the beginning and 2 to insert at the last\n");
-        scanf("%d", &ch);
-        if (ch == 1)
-            insertAtFirst(&head_2, &tail_2);
-        if (ch == 2)
-            insertAtLast(&head_2, &tail_2);
-        printf("Do you want to add another node?\n");
-        scanf(" %c", &more);
-    }
-    concatenateLists(&tail, &head_2);
-    printf("The concatenated list is :\n");
+    int x;
+    printf("Enter the key whose last occurence you want to delete\n");
+    scanf("%d", &x);
+    deleteLastOccurence(&head, &tail, x);
+    printf("The list after deleting the last occurence of %d : \n", x);
     printList(head);
     freeMemory(&head);
     return 0;
